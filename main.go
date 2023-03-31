@@ -2,9 +2,9 @@ package main
 import (
 	"database/sql"
 	"time"
+	"fmt"
 	"github.com/gorilla/mux"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -52,7 +52,7 @@ dbHost := os.Getenv("DB_HOST")
 	r := mux.NewRouter()
 	r.HandleFunc(apiPath, l.getBooks).Methods(http.MethodGet)
 	r.HandleFunc(apiPath, l.postBook).Methods(http.MethodPost)
-	http.ListenAndServe(":8080", r)
+	http.ListenAndServe(":3002", r)
 }
 func (l library) postBook(w http.ResponseWriter, r *http.Request) {
 	// read the request into an instance of book
@@ -112,7 +112,7 @@ func (l library) getBooks(w http.ResponseWriter, r *http.Request) {
 }
 
 func (l library) openConnection() *sql.DB {
-db, err := sql.Open("mysql", "user:password@/dbname")
+db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@/%s", "root", l.dbPass, l.dbName))
 if err != nil {
 	panic(err)
 }
